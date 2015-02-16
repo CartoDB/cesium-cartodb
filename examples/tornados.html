@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+        <title>U.S. tornados</title>
+        <script src="Cesium/Cesium.js"></script>
+        <style>
+            @import url(Cesium/Widgets/widgets.css);
+
+            html, body, #cesiumContainer {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="cesiumContainer"></div>
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.11/cartodb.core.js"></script>
+        <script src="../build/cesium-cartodb.min.js"></script>
+        <script>
+            // Carto DB basemaps
+            var basemapProvider = new Cesium.CartoDBImageryProvider({
+                url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                credit: 'Basemap courtesy of CartoDB'
+            });
+            var viewer = new Cesium.Viewer('cesiumContainer', {
+                imageryProvider: basemapProvider,
+                baseLayerPicker: false,
+                fullscreenButton: false,
+                homeButton: false,
+                timeline: false,
+                navigationHelpButton: false,
+                animation: false,
+                scene3DOnly: true,
+                geocoder: false
+            });
+
+            // Tile data layer
+            var layerData = {
+                user_name: 'dcarrion',
+                sublayers: [{
+                    sql: "SELECT * FROM tornados",
+                    cartocss: '#tornados{ marker-fill: #FFCC00; marker-width: 10; marker-line-color: #FFF; marker-line-width: 1.5; marker-line-opacity: 1; marker-fill-opacity: 0.9; marker-comp-op: multiply; marker-type: ellipse; marker-placement: point; marker-allow-overlap: true; marker-clip: false; marker-multi-policy: largest;}'
+                }]
+            };
+            cartodb.Tiles.getTiles(layerData, function (tiles, err) {
+                if (tiles == null) {
+                    console.log("error: ", err.errors.join('\n'));
+                    return;
+                }
+                viewer.scene.imageryLayers.addImageryProvider(new Cesium.CartoDBImageryProvider({
+                    url: tiles.tiles[0],
+                    credit: 'Tornado data courtesy of CartoDB'
+                }));
+            });
+        </script>
+    </body>
+</html>
