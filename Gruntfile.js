@@ -15,8 +15,8 @@ module.exports = function (grunt) {
                 root: ".",
                 port: 8000,
                 host: "127.0.0.1",
-                showDir: false,
-                autoIndex: false,
+                showDir: true,
+                autoIndex: true,
                 ext: "html",
                 runInBackground: false
             }
